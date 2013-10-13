@@ -2,7 +2,6 @@ let split = Str.split (Str.regexp_string " ");;
 
 let gamma_table = Hashtbl.create 1000;;
 
-
 let gammaln_of_int ( z : int ) =
     if Hashtbl.mem gamma_table z then 
         Hashtbl.find gamma_table z
@@ -27,28 +26,18 @@ let gammaln_of_int ( z : int ) =
     end
 ;;
 
-let beta_function (alpha:int) (beta:int) =
-    exp (gammaln_of_int(alpha) 
+let ln_beta_function (alpha:int) (beta:int) =
+     ( gammaln_of_int(alpha) 
     +. gammaln_of_int(beta) 
-    -. gammaln_of_int(alpha + beta))
-;;
-
-let power (x:float) (n:int) =
-    x ** (float_of_int n)
-;;
-
-let beta_pdf (alpha:int) (beta:int) (x:float) =
-    let num =
-    (power x (alpha -1 )) *. ( power (1. -. x)  (beta -1))
-    in num /. (beta_function alpha beta)
+    -. gammaln_of_int(alpha + beta) )
 ;;
 
 let h a1 b1 a2 b2 =
-    (beta_function (a1+a2) (b1+b2)) /. 
-    (( beta_function a1 b1 ) *. (beta_function a2 b2))
+    exp ((ln_beta_function (a1+a2) (b1+b2)) -. 
+    (( ln_beta_function a1 b1 ) +. (ln_beta_function a2 b2)))
 ;;
 
-let rec g a1 b1 a2 b2  =
+let rec g (a1:int) (b1:int) (a2:int) (b2:int)  =
     if  a1 = b1 && b1 = a2 && a2 = b2  then 0.5 
     else  if  a1 > 1  then 
         (g (a1-1) b1 a2 b2 ) +. 
@@ -66,12 +55,6 @@ let rec g a1 b1 a2 b2  =
         ( g a1 b1 a2 ( b2 - 1 ) ) +. 
             ( h a1 b1 a2 ( b2 - 1 ) ) /. ( float_of_int ( b2 - 1 ) )
     else -1.0 
-;;
-
-let rec range start stop acc =
-    match start with 
-    |start when ( start > stop ) -> ( List.rev acc )
-    |_ -> range (start + 1 ) stop ( start::acc )
 ;;
 
 let _ =
