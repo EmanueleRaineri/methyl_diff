@@ -1,12 +1,11 @@
 let split = Str.split (Str.regexp_string " ");;
 
-
-
-let gammaln ( z : float ) =
+let gammaln_of_int ( z : int ) =
     let cof =[|76.18009172947146;-86.50532032941677;
               24.01409824083091;-1.231739572450155;
               0.1208650973866179e-2;-0.5395239384953e-5|]
-    in let y = ref z in
+    and z = float_of_int z in 
+    let y = ref z in
     let x = z in
     let tmp=x +. 5.5 in
     let tmp = tmp -. (x +. 0.5)*.log(tmp) in
@@ -18,11 +17,9 @@ let gammaln ( z : float ) =
     -. tmp +. log( 2.5066282746310005 *. !ser /. x )
 
 let beta_function (alpha:int) (beta:int) =
-    let alpha= float_of_int alpha
-    and beta = float_of_int beta in
-    exp (gammaln(alpha) 
-    +. gammaln(beta) 
-    -. gammaln(alpha +. beta))
+    exp (gammaln_of_int(alpha) 
+    +. gammaln_of_int(beta) 
+    -. gammaln_of_int(alpha + beta))
 ;;
 
 let power (x:float) (n:int) =
@@ -83,5 +80,3 @@ let _ =
  None
 with
  End_of_file -> None
-    
-
