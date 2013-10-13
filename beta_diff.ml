@@ -1,6 +1,13 @@
 let split = Str.split (Str.regexp_string " ");;
 
+let gamma_table = Hashtbl.create 1000;;
+
+
 let gammaln_of_int ( z : int ) =
+    if Hashtbl.mem gamma_table z then 
+        Hashtbl.find gamma_table z
+    else begin
+    
     let cof =[|76.18009172947146;-86.50532032941677;
               24.01409824083091;-1.231739572450155;
               0.1208650973866179e-2;-0.5395239384953e-5|]
@@ -14,7 +21,11 @@ let gammaln_of_int ( z : int ) =
         y:=!y +. 1.0;
         ser := !ser +. cof.(j) /. !y 
     done;
-    -. tmp +. log( 2.5066282746310005 *. !ser /. x )
+    let res = -. tmp +. log( 2.5066282746310005 *. !ser /. x )
+    in Hashtbl.add gamma_table (int_of_float z) res;
+    res
+    end
+;;
 
 let beta_function (alpha:int) (beta:int) =
     exp (gammaln_of_int(alpha) 
