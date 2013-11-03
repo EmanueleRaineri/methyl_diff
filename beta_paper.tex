@@ -1,8 +1,26 @@
 \documentclass{amsart}
+\usepackage{eulervm}
+\renewcommand{\rmdefault}{pplx}
 \title{Computing exact differences between beta distribution in genomic studies}
-\author{Emanuele Raineri, Marc Dabeda Casstella}
+\author{ER, MDC,SH}
 \begin{document}
-\section{Introduction}
-papapa
-\section{}
+\begin{abstract}
+We apply a known algorithm for computing the exact difference between beta distributions
+to compute the probability that a given position in a genome is differentially methylated across
+individuals. We discuss the advantages brought by the adoption of the exact solution
+with respect to two simpler approximation (Fisher's test and Z score).
+The same formalism can be applied to variant calling.
+\end{abstract}
+\maketitle
+
+\section{Beta distribution to model methylation probabilities}
+Given a population of cells, not all of them will be methylated at a given
+genomic position (especially if one considers non CpG methylation).
+If the probability for a position to be methylated is $p$, and one performs whole genome
+bisulfite sequencing, one can expect that the number of non converted reads  will be:
+${C \choose n}n^p(C-n)^{1-p}$.
+If, on the other hand, one is given the number of non converted reads and wants to estimate the parameter $p$, one finds that it follows a beta distribution with parameters $\alpha=n+1,\beta=m+1$.
+let us considers a genomic position in two individuals, and the corresponding methylation probabilities $X_1,X_2$. To explore whether the same position is differentially methylated across the individuals one
+should compute $P(X_1>X_2)$. Customarily, this problem is tackled by simpler approximation : a particular handy one consists in performing a Fisher test over a contingency table built with the number of non converted and converted reads for individuals 1 and 2.
+The fisher  test does not know aout the underlying beta distribution, hence one would expect some loss of power: here below I show that this is the case
 \end{document}
