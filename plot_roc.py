@@ -32,7 +32,7 @@ for idx in range(len(sys.argv[1:])):
     linestyle="--",
     c=colors[2*idx],
         linewidth=3,
-        alpha=0.5)
+        alpha=1)
     ax.plot(fpr_beta,tpr_beta,c=colors[2*idx+1],
     label='beta'+infile,
     linewidth=3,

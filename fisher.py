@@ -10,7 +10,7 @@ for line in sys.stdin:
     a=np.array([s1,s2])
     #print a
     try:
-        pval= scipy.stats.fisher_exact(a)[1]
+        pval= scipy.stats.fisher_exact(a,'greater')[1]
         print pval
     except ValueError:
         print 1.0 
