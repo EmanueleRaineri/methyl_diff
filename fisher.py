@@ -10,6 +10,8 @@ for line in sys.stdin:
     a=np.array([s1,s2])
     #print a
     try:
-        print scipy.stats.fisher_exact(a)[1]
+        pval= scipy.stats.fisher_exact(a)[1]
+        print pval
     except ValueError:
-        print float('NaN')
+        print 1.0 
+        print >>sys.stderr, float('NaN')

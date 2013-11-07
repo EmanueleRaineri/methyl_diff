@@ -13,14 +13,20 @@ The same formalism can be applied to variant calling.
 \end{abstract}
 \maketitle
 
-\section{Beta distribution to model methylation probabilities}
-Given a population of cells, not all of them will be methylated at a given
-genomic position (especially if one considers non CpG methylation).
-If the probability for a position to be methylated is $p$, and one performs whole genome
-bisulfite sequencing, one can expect that the number of non converted reads  will be:
-${C \choose n}n^p(C-n)^{1-p}$.
-If, on the other hand, one is given the number of non converted reads and wants to estimate the parameter $p$, one finds that it follows a beta distribution with parameters $\alpha=n+1,\beta=m+1$.
-let us considers a genomic position in two individuals, and the corresponding methylation probabilities $X_1,X_2$. To explore whether the same position is differentially methylated across the individuals one
-should compute $P(X_1>X_2)$. Customarily, this problem is tackled by simpler approximation : a particular handy one consists in performing a Fisher test over a contingency table built with the number of non converted and converted reads for individuals 1 and 2.
-The fisher  test does not know aout the underlying beta distribution, hence one would expect some loss of power: here below I show that this is the case
+\section{Introduction: Beta distribution to model methylation probabilities}
+First, I'll introduce how the beta distribution comes up in genomics.
+Imagine you have a set of reads, all covering a certain genomic coordinate $x$. Since the reads might come from different individuals, or perhaps from a single individual who is heterozygous at $x$, not all the nucloetides mapped at $x$ will coincide with the reference genome: a number of them will, with probability $p$, be different. 
+Something similar happens when measuring DNA methylation probabilities : not all cells samples for the sequencing will, in general,  have the same basis methylated at the time of the sampling, hence the final result of a bisulfite experiment will be a collection of heterogeneous reads : some will indicate methylation at position $x$ (these are the so called {\em non converted} reads), others (the {\em converted} reads will correspond to samples that are not methylated at position $x$. What one wants to know is the probability $\theta$ of methylation. If $\theta$ were known a priori, the probability of obtaining $n$ non converted reads is :
+${C \choose n}n^\theta m^{1-\theta}$
+where $m$ is the number of converted reads which is simply the coverage $C$ minus $n$.
+If, on the other hand, one is given the number of non converted reads and wants to
+estimate the parameter $\theta$, one finds that it follows a beta distribution with parameters $\alpha=n+1,\beta=m+1$.
+let us considers a genomic position in two individuals, and the corresponding methylation probabilities $\theta_1,\theta_2$. To explore whether the same position is differentially methylated across the individuals one
+should compute $P(\theta_1>\theta_2)$. Customarily, this problem is tackled by simpler approximation : a particular handy one consists in performing a Fisher test over a contingency table built with the number of non converted and converted reads for individuals 1 and 2. Another quick approximation consists in computing a Z-score, which is usually transformed into a p-value assuming that $\theta_1,\theta_2$ are Gaussian (with the same mean and variance as the underlying Beta distribution).  Fig \ref{cmpgauss} shows that this approximation can be wide off the mark.
+
+Below I show the difference between adopting these approximation and using an exact computation.
+\section{Results} 
+The fisher  test does not know about the underlying beta distribution, hence one would expect some loss of power: here below I show that this is the case in three  comparisons matching respectively samples at low coverage ($C_1=10$), a sample at low coverage  against a sample at high coverage ($C_2=40$), two samples at high coverage. In all cases, the true probabilities of methylation for the samples are $\theta_1=0.9,\theta_2=0.5$.
+\section{Methods}
+
 \end{document}

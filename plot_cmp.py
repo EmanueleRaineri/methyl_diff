@@ -1,6 +1,7 @@
 import matplotlib.pylab as plt
 import numpy as np
-data=np.genfromtxt("cmp_results.txt",dtype=None)
+import sys
+data=np.genfromtxt(sys.argv[1],dtype=None)
 
 fig,ax=plt.subplots()
 fig.patch.set_visible(False)
@@ -22,6 +23,5 @@ yzoom=data[idx_zoom,1]
 #ax2.set_xscale('log')
 #ax2.set_yscale('log')
 ax2.scatter(xzoom,yzoom,c='r',marker='o',edgecolor='none')
-
-
-plt.show()
+#plt.show()
+fig.savefig(sys.argv[1]+".png")
