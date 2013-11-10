@@ -23,4 +23,5 @@ paste fisher.roc.${COV1}_${COV2}.txt beta.roc.${COV1}_${COV2}.txt > roc_${COV1}_
 cat fisher_of_tp_${COV1}_${COV2}.txt fisher_of_tn_${COV1}_${COV2}.txt > fisher_${COV1}_${COV2}.txt 
 cat beta_of_tp_${COV1}_${COV2}.txt beta_of_tn_${COV1}_${COV2}.txt > beta_${COV1}_${COV2}.txt 
 paste fisher_${COV1}_${COV2}.txt beta_${COV1}_${COV2}.txt > fisher_beta_${COV1}_${COV2}.txt
+#plot with plot_roc.py 
 #######
