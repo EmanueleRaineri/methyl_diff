@@ -9,24 +9,28 @@ We apply a known algorithm for computing the exact difference between beta distr
 to compute the probability that a given position in a genome is differentially methylated across
 individuals. We discuss the advantages brought by the adoption of the exact solution
 with respect to two simpler approximation (Fisher's test and Z score).
-The same formalism can be applied to variant calling.
+The same formalism can be applied in a similar way to variant calling.
 \end{abstract}
 \maketitle
 
-\section{Introduction: Beta distribution to model methylation probabilities}
-First, I'll introduce how the beta distribution comes up in genomics.
-Imagine you have a set of reads, all covering a certain genomic coordinate $x$. Since the reads might come from different individuals, or perhaps from a single individual who is heterozygous at $x$, not all the nucloetides mapped at $x$ will coincide with the reference genome: a number of them will, with probability $p$, be different. 
-Something similar happens when measuring DNA methylation probabilities : not all cells samples for the sequencing will, in general,  have the same basis methylated at the time of the sampling, hence the final result of a bisulfite experiment will be a collection of heterogeneous reads : some will indicate methylation at position $x$ (these are the so called {\em non converted} reads), others (the {\em converted} reads will correspond to samples that are not methylated at position $x$. What one wants to know is the probability $\theta$ of methylation. If $\theta$ were known a priori, the probability of obtaining $n$ non converted reads is :
-${C \choose n}n^\theta m^{1-\theta}$
-where $m$ is the number of converted reads which is simply the coverage $C$ minus $n$.
-If, on the other hand, one is given the number of non converted reads and wants to
-estimate the parameter $\theta$, one finds that it follows a beta distribution with parameters $\alpha=n+1,\beta=m+1$.
-let us considers a genomic position in two individuals, and the corresponding methylation probabilities $\theta_1,\theta_2$. To explore whether the same position is differentially methylated across the individuals one
-should compute $P(\theta_1>\theta_2)$. Customarily, this problem is tackled by simpler approximation : a particular handy one consists in performing a Fisher test over a contingency table built with the number of non converted and converted reads for individuals 1 and 2. Another quick approximation consists in computing a Z-score, which is usually transformed into a p-value assuming that $\theta_1,\theta_2$ are Gaussian (with the same mean and variance as the underlying Beta distribution).  Fig \ref{cmpgauss} shows that this approximation can be wide off the mark.
+\section{Introduction}
+\subsection{Beta distribution to model methylation probabilities}
+First, I'll introduce how the beta distribution comes up in many analyses of genomic data : for concreteness I will describe the case of measuring DNA methylation through a whole genome bisulfite sequencing (WGBS in what follows). 
+Consider a set of reads out of a WGBS experiment covering a certain genomic coordinate $x$. Since not all cells in the sample being sequenced will, in general,  have the same basis methylated at the same time, hence the final result of a bisulfite experiment will be a collection of heterogeneous reads : some will indicate methylation at position $x$ (these are the so called {\em non converted} reads), others (the {\em converted} reads will correspond to samples that are not methylated at position $x$. What one wants to measure is the probability $\theta$ of methylation i.e. the fraction of bases methylated at position $x$. Let's first fix some notation. I will indicate the Beta probability distribution (over $theta$) with parameters $\alpha,\beta$ with $\mbox{Beta}(\alpha,\beta)$. On the other hand, I'll use the letter $B$ for the Beta function 
+\[B(\alpha,\beta)=\frac{(\alpha-1)!(\beta-1)!}{(\alpha+\beta-1)!}\]. Explicitly, one has \[\mbox{Beta}(\alpha,\beta)=\frac{\theta^{\alpha-1}(1-\theta)^{\beta-1}}{B(\alpha,\beta)}\] If $\theta$ were known a priori, the probability of obtaining $n$ non converted reads is :
+\[P(n|\theta)={C \choose n}\theta^n {1-\theta}^(C-n)=\frac{1}{C+1}\mbox{Beta}(n+1,C-n+1)\]
+If one assumes a uniform prior on $\theta$, $P(\theta)=1 \ \forall \theta \in [0,1]$ the expression for $P(\theta|n)$ is very similar the same 
+\[P(\theta|n)=\mbox{Beta}(n+1,C-n+1)\].
+let us considers a genomic position in two individuals, and the corresponding methylation probabilities $\theta_1,\theta_2$. 
+To explore whether the same position is differentially methylated across the individuals with unconverted reads respectively $n_1,n_2$ and read depths $d_1,d_2$ one
+has to compute $P(\theta_1>\theta_2)$. 
+Customarily, this problem is tackled by simpler approximation : a particular handy one consists in performing a Fisher test over a contingency table built with the number of non converted and converted reads for individuals 1 and 2. Another quick approximation consists in computing a Z-score, which is usually transformed into a p-value assuming that $\theta_1,\theta_2$ are Gaussian (with the same mean and variance as the underlying Beta distribution).  Fig \ref{cmpgauss} shows that this approximation can be wide off the mark.
+\subsection{Exact computation of beta differences}
+
 
 Below I show the difference between adopting these approximation and using an exact computation.
 \section{Results} 
-The fisher  test does not know about the underlying beta distribution, hence one would expect some loss of power: here below I show that this is the case in three  comparisons matching respectively samples at low coverage ($C_1=10$), a sample at low coverage  against a sample at high coverage ($C_2=40$), two samples at high coverage. In all cases, the true probabilities of methylation for the samples are $\theta_1=0.9,\theta_2=0.5$.
+I first compare the exact beta difference with a fisher test
 \section{Methods}
 
 \end{document}
