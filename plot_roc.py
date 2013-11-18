@@ -61,9 +61,9 @@ for idx in range(len(sys.argv[1:])):
     ax.annotate(thr, xy=(x, y), xytext=(0.1, 0.1), 
     textcoords = 'offset points')"""
     #plot points
-    ax.scatter(fpr_fisher,tpr_fisher,marker='o',c='black')
-    ax.scatter(fpr_beta,tpr_beta,marker='o',c='black')
-    ax.scatter(fpr_zscore,tpr_zscore,marker='o',c='black')
+    ax.scatter(fpr_fisher,tpr_fisher,marker='o',c='blue')
+    ax.scatter(fpr_beta,tpr_beta,marker='o',c='red')
+    ax.scatter(fpr_zscore,tpr_zscore,marker='o',c='green')
     #
     legend = ax.legend(loc='center right', 
     scatterpoints=1,
