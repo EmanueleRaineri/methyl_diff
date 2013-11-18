@@ -19,8 +19,8 @@ for line in sys.stdin:
     m1,v1=mean_var_beta(alpha1,beta1)
     m2,v2=mean_var_beta(alpha2,beta2)   
     z_score=(m1-m2)/np.sqrt(v1+v2)
-    if (z_score>0):
-        pval = 1- 0.5*(1+scipy.special.erf(z_score/sqrt2))
-    else:
-        pval = 0.5*(1+scipy.special.erf(z_score/sqrt2))
+    #if (z_score>0):
+    pval = 1 - 0.5*(1+scipy.special.erf(z_score/sqrt2))
+    #else:
+     #   pval = 0.5*(1+scipy.special.erf(z_score/sqrt2))
     print z_score,pval
