@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pylab as plt
-
+import matplotlib.cm as cm
 
 def histo_2d(ax,x,y,xlabel,ylabel):
-    im=ax.hexbin(x,y,bins='log')
+    im=ax.hexbin(x,y,bins='log',cmap=cm.Blues)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     return im 
