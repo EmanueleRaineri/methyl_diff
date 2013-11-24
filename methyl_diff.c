@@ -3,7 +3,10 @@
 
 double lngamma(const double xx) {
     int j;
-    double x,tmp,y,ser; 
+    double x,tmp,y,ser,tmp2; 
+    static double a[101];
+    int n = (int)xx;
+    if (n<=100 && a[n]>0) return a[n]; 
     static const double cof[14]={57.1562356658629235,-59.5979603554754912,
     14.1360979747417471,-0.491913816097620199,
     .339946499848118887e-4, .465236289270485756e-4,
@@ -16,14 +19,16 @@ double lngamma(const double xx) {
     tmp = (x+0.5)*log(tmp)-tmp; 
     ser = 0.999999999999997092; 
     for (j=0;j<14;j++) ser += cof[j]/++y; 
-    return tmp+log( 2.5066282746310005*ser/x );
+    tmp2 = tmp + log( 2.5066282746310005*ser/x );
+    if (n<=100) a[n]=tmp2;
+    return tmp2 ;
 }
 
 double lnfact( int n ){
-    static double a [100];
+    static double a [101];
     double tmp;
     if ( n>100 ) return lngamma( n + 1.0 );
-    if ( a[n]>-1 )  return a[n];
+    if ( a[n]>0 )  return a[n];
     a[n] = lngamma(n + 1.0 );
     return a[n]; 
 }
