@@ -33,6 +33,15 @@ This problem can be tackled by performing a Fisher test over a contingency table
  
 \subsection{Exact computation of beta differences}
 
+Let $I_x(a,b)$ the cumulative distribution function of a $Beta(a,b)$ distribution. Let also $g(a,b,c,d)=P(X_1>X_2)$ where $X_1$ and $X_2$ are distributed respectively as $Beta(a,b)$ and $Beta(c,d)$. By definition one has \[P(X_1>X_2)=g(a,b,c,d)=\int_{-\infty}^{+\infty} Beta_x(a,b)I_x(c,d) dx\]
+Using the identity \[I_x(c,d)=\frac{1}{cB(c,d)}x^c(1-x)^d+I_x(c+1,d)\] one finds that 
+\begin{align}
+g(a+1,b,c,d) &= g(a,b,c,d) + h(a,b,c,d)/a \\
+g(a,b+1,c,d) &= g(a,b,c,d) - h(a,b,c,d)/b \\
+g(a,b,c+1,d) &= g(a,b,c,d) - h(a,b,c,d)/c \\
+g(a,b,c,d+1) &= g(a,b,c,d) + h(a,b,c,d)/d 
+\end{align}
+
 \section{Results and methods} 
 I organized the comparison between the exact and approximate solution in two steps. First,
 I looked at the behaviour of the two tests on a pair of real samples. The results are shown in \ref{cmpreal}

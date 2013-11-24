@@ -7,7 +7,7 @@ def lines_of_data(ax,x,y,label,colour):
     label=label,
     linestyle="-",
     c=colour, 
-    linewidth=3, 
+    linewidth=1, 
     alpha=0.5)
     ax.scatter(x,y,marker='o',c=colour,lw=0)
     return lines
@@ -49,6 +49,9 @@ l7,l8,l9 = make_triplet(ax3,data3)
 
 ax1.set_yticks( [0.50,0.60,0.70,0.80,0.90,1.00])
 ax1.yaxis.set_tick_params(direction='in', length=2, width=2, right='off', pad=5)
+ax1.set_title("read depth=5")
+ax2.set_title("read depth=10")
+ax3.set_title("read depth=40")
 ax3.yaxis.set_tick_params(direction='in', length=2, width=2, right='off', pad=5)
 ax3.set_yticks( [0.85,0.90,0.95,1.00])
 
