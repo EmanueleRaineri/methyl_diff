@@ -4,11 +4,12 @@
 int index_chr(char* c, char** chrnames, int n){
     int i;
     for(i=0; i<n; i++){
-
-         
+        if ( strcmp( chrnames[i] , c )==0 ) {
+            return i;
+        }
     }
+    return -1;
 }
-
 
 int main(int argc, char* argv[]){
     if (argc<4) {
@@ -25,17 +26,43 @@ int main(int argc, char* argv[]){
         if ( feof( fchr ) ) break;
         c++;     
     }
+    // 
     fclose(fchr);
     fprintf(stderr,"%d chromosome(s) found\n",c);
     char** chrnames;
-    chrnames = (char**)malloc(c*sizeof(char*));
+    chrnames = ( char** ) malloc( c*sizeof(char*) );
     int i;
     fchr=fopen(argv[1],"r");
+    //
     for( i=0; i<c; i++ ) {
-        chrnames[i]=malloc(100);
-        fscanf(fchr,"%s",chrnames[i]);
-        fprintf(stderr,"%s\n",chrnames[i]);
+        chrnames[i] = malloc( 100 );
+        fscanf( fchr , "%s" , chrnames[i] );
+        fprintf( stderr , "%s\n" , chrnames[i] );
     }
-     
+    //
+    
+    fclose(fchr);
+    char* line1=malloc(1000);
+    char* line2=malloc(1000);
 
+    FILE* f1=fopen(argv[2],"r");
+    FILE* f2=fopen(argv[3],"r");
+    
+    char* sep ="\\t ";
+    char* word;
+    char *chr1,*chr2;
+    int pos1,pos2,i1,i2;
+    chr1=malloc(100);
+    chr2=malloc(100);
+    while(1){
+        line1 = fgets(line1, 1000, f1  );
+        line2 = fgets(line2, 1000, f2  );
+        if ( feof(f1) || feof(f2) ) break;
+        sscanf( line1 , "%s %d" , chr1 , &pos1 ); 
+        sscanf( line2 , "%s %d" , chr2 , &pos2 ); 
+        fprintf(stdout,"%s %d %s %d\n",chr1,pos1,chr2,pos2);
+        i1=index_chr(chr1,chrnames,c);
+        i2=index_chr(chr2,chrnames,c);
+        //fprintf(stdout,"%d %d\n",i1,i2);
+    }
 }
