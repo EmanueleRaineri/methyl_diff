@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 double lngamma(const double xx) {
     int j;
@@ -26,7 +27,6 @@ double lngamma(const double xx) {
 
 double lnfact( int n ){
     static double a [101];
-    double tmp;
     if ( n>100 ) return lngamma( n + 1.0 );
     if ( a[n]>0 )  return a[n];
     a[n] = lngamma(n + 1.0 );
@@ -70,10 +70,16 @@ double g (int a1, int b1, int a2, int b2){
 
 int main(){
     int nc1,c1,nc2,c2;
+    int s;
     while(1){
-        fscanf(stdin, "%d %d %d %d",&nc1,&c1,&nc2,&c2 );
+        s=fscanf(stdin, "%d %d %d %d",&nc1,&c1,&nc2,&c2 );
+        if (s!=4) {
+            fprintf(stderr,"invalid input line\n");
+            exit(1);
+        }
         if (feof(stdin)) break;
         fprintf(stdout,"%g\n",g(nc1 + 1 , c1 + 1 , nc2 + 1 , c2 + 1 ) );
     }
+    return 0;
 }
 
