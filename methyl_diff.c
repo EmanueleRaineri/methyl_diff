@@ -73,11 +73,11 @@ int main(){
     int s;
     while(1){
         s=fscanf(stdin, "%d %d %d %d",&nc1,&c1,&nc2,&c2 );
+        if (feof(stdin)) break;
         if (s!=4) {
             fprintf(stderr,"invalid input line\n");
             exit(1);
         }
-        if (feof(stdin)) break;
         fprintf(stdout,"%g\n",g(nc1 + 1 , c1 + 1 , nc2 + 1 , c2 + 1 ) );
     }
     return 0;
