@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pylab as plt
+import matplotlib as mpl
 import sys
 
 def lines_of_data(ax,x,y,label,colour): 
@@ -19,6 +20,7 @@ def make_triplet(ax,data):
     return (l1,l2,l3)
 
 ###################
+
 
 data1 = np.genfromtxt("roc_5_5.txt")
 data2 = np.genfromtxt("roc_10_10.txt")
