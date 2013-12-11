@@ -56,11 +56,6 @@ ax3.yaxis.set_tick_params(direction='in', length=2, width=2, right='off', pad=5)
 ax3.set_yticks( [0.85,0.90,0.95,1.00])
 
 
-"""ax1.set_yticks( [0.51,0.61,0.71,0.81,0.91,1.00])
-ax1.yaxis.set_ticklabels(["0.5","0.6","0.7","0.8","0.9","1.0"])
-
-ax3.set_yticks( [0.81,0.86,0.91,0.96,1.00])
-ax3.yaxis.set_ticklabels(["0.8","0.85","0.90","0.95","1.0"])"""
 
 ax3.legend( [l7,l8,l9],
     ["Fisher's test","Beta","Z"], 

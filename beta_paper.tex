@@ -2,6 +2,9 @@
 \usepackage{eulervm}
 \usepackage{graphicx}
 \renewcommand{\rmdefault}{pplx}
+\newcommand{\ie}{\textit{i.e.}\ }
+\newcommand{\eg}{\textit{e.g.}\ }
+\newcommand{\betapdf}{\mbox{Beta}_\theta}
 \title{A note on exact differences between beta distributions in genomic (methylation) studies}
 \author{Emanuele Raineri, Marc Dabad,Simon Heath}
 \email{emanuele.raineri@gmail.com}
@@ -10,45 +13,48 @@
 \begin{abstract}
 We apply a known (\cite{exactbetaineq},\cite{numineq}) algorithm for computing exactly the difference between beta distributions
 to assess whether a given position in a genome is differentially methylated across
-samples. We discuss the advantages brought by the adoption of the exact solution
+samples. We discuss the advantages brought by the adoption of this solution
 with respect to two approximations (Fisher's test and Z score).
 The same formalism presented here can be applied in a similar way to variant calling.
 \end{abstract}
 \maketitle
 \section{Introduction}
 \subsection{Beta distribution to model methylation probabilities}
-The Beta probability distribution (defined explicitly below)  appears very naturally in many studies of genomic data : tipically such analyses also entail the comparison between different samples, which in turn means that different Betas have to be combined. Here for concreteness we will describe the case of measuring DNA methylation through whole genome bisulfite sequencing (WGBS in what follows), but the same concepts  apply with almost no change to SNP calling. 
+The Beta probability distribution (defined explicitly below) appears very naturally in many studies of genomic data: tipically such analyses also entail the comparison between different samples, which in turn means that different Betas have to be combined. Here for concreteness we will describe the case of measuring DNA methylation differences across samples through whole genome bisulfite sequencing (WGBS in what follows), but the same concepts  apply with almost no change to SNP calling. 
 
-The general problem  of measuring DNA methylation differences between samples can be described for our purposes as follows : imagine two populations of cells. At any given genomic coordinate, a certain fraction of the DNA strands in the first population population will be methylated: we will indicate this quantity with $\theta_1$. The corresponding number for the second population is $\theta_2$. The purpose of WGBS is to estimate the $\theta$ of a given input population by measuring the methylation state of a random ( i.e. selected in some unpredictable way )  subset of it. The purpose of the software we will discuss in this note is to estimate $P(\theta_1>\theta_2)$ given the result of a WGBS experiment.
+The problem can be described for our purposes as follows : imagine two populations of cells. At any given genomic coordinate, a certain fraction of the DNA strands in the first population population will be methylated: we will indicate this quantity with $\theta_1$. The corresponding number for the second population is $\theta_2$. The purpose of WGBS is to estimate the $\theta$ of a given input population by measuring the methylation state of a random (\ie selected in some unpredictable way )  subset of it. The purpose of the software we will discuss in this note is to estimate $P(\theta_1>\theta_2)$ given the result of a WGBS experiment.
 
-In what follows we will show one way of building a probabilisic model of the above experiment, and study some features of an algorithm which outputs $P$ . In particular we will show the advantages of the exact computation over two sensible approximations to it, namely performing a Fisher's test on the counts and computing a Z score test. An implementation of the exact algorithm is available on the web (see below).
+In what follows we will show one way of building a probabilisic model of the above experiment, and study some features of an algorithm which outputs $P$. In particular we will show the advantages of the exact computation over two sensible approximations to it, namely performing a Fisher's test on the counts and computing a Z score test. An implementation of the exact algorithm is available on the web (see below).
 
-Now on to some notation. We will indicate the Beta probability distribution (over $\theta$) with parameters $a,b$ with $\mbox{Beta}(a,b)$. On the other hand, we'll use the letter $B$ for the Beta function 
-\[B(a,b)=\frac{(a-1)!(b-1)!}{(a+b-1)!}\] The $B$ function plays a role in the definition of the Beta distribution \[\mbox{Beta}(a,b)=\frac{\theta^{a-1}(1-\theta)^{b-1}}{B(a,b)}\]
+Now on to some notation. We will indicate the Beta probability distribution (over $\theta$) with parameters $a,b$ with 
+$\betapdf(a,b)$. On the other hand, we will use the letter $B$ for the Beta function 
+\[B(a,b)=\frac{(a-1)!(b-1)!}{(a+b-1)!}\] The $B$ function plays a role in the definition of the Beta distribution 
+\[\betapdf(a,b)=\frac{\theta^{a-1}(1-\theta)^{b-1}}{B(a,b)}\]
  
-Consider a set of reads out of a WGBS experiment covering a certain genomic coordinate $x$ with read depth $d$. Since not all cells in the sample being sequenced will, in general,  have the same bases methylated at the same time, we will have a collection of heterogeneous reads : some will indicate methylation at position $x$ ( these are the so called {\em non converted} reads ), others ( the {\em converted} reads ) will correspond to samples that are not methylated. What one wants to estimate is the probability $\theta$ of methylation in the population (as opposed to the sampled reads) at position $x$.  If $\theta$ is known a priori, the probability of obtaining $n$ non converted reads is :
-\[P(n|\theta)={d \choose n}\theta^n ({1-\theta})^{(d-n)}=\frac{1}{d+1}\mbox{Beta}(n+1,d-n+1)\]
-If one assumes a uniform prior on $\theta$, $P(\theta)=1 \ \forall\, \theta \in [0,1]$ the expression for $P(\theta|n)$ is very similar \footnote{The factor $\frac{1}{d+1}$ cancels out when applying Bayes' theorem}
-\[P(\theta|n)=\mbox{Beta}(n+1,d-n+1)\]
+Consider a set of reads out of a WGBS experiment covering a certain genomic coordinate $x$ with read depth $d$. Since not all cells in the sample being sequenced will, in general,  have the same bases methylated at the same time, we will have a collection of heterogeneous reads : some will indicate methylation at position $x$ ( these are the so called {\em non converted} reads ), others ( the {\em converted} reads ) will correspond to samples that are not methylated. What one wants to estimate is the probability $\theta$ of methylation in the population (as opposed to the sampled reads) at $x$.  If $\theta$ is known a priori, the probability of obtaining $n$ non converted reads is :
+\[P(n|\theta)={d \choose n}\theta^n ({1-\theta})^{(d-n)}=\frac{1}{d+1}\betapdf(n+1,d-n+1)\]
+If one assumes a uniform prior on $\theta$, ($P(\theta)=1, \ \forall\, \theta \in [0,1]$) the expression for $P(\theta|n)$ is very similar \footnote{The factor $\frac{1}{d+1}$ cancels out when applying Bayes' theorem}
+\[P(\theta|n)=\betapdf(n+1,d-n+1)\]
 Therefore, to assess whether a position is differentially methylated across two samples with non converted reads respectively $n_1,n_2$ and read depths $d_1,d_2$ one
 has to compute 
 \[P(\theta_1>\theta_2) \] where 
-\[ \theta_1 \sim \mbox{Beta}(n_1+1,d_1-n_1+1) , \theta_2 \sim \mbox{Beta}(n_2+1,d_2-n_2+1))\]\label{ineq}
+\[ \theta_1 \sim \betapdf(n_1+1,d_1-n_1+1) , \theta_2 \sim \betapdf(n_2+1,d_2-n_2+1))\]\label{ineq}
 
  
 \subsection{Exact computation of beta differences}
-We will summarize here the discussion in \ref{ineq}. The reader is advies to read it for a more detailed derivation.
+We will summarize here the discussion in \cite{numineq}. The reader is advised to read that paper for a more detailed derivation.
 We need some preliminary definitions to start with:
-Let $I_x(a,b)$ the cumulative distribution function of a $Beta(a,b)$ distribution. Let also $g(a,b,c,d) \equiv P(\theta_1>\theta_2)$ where $\theta_1$ and $\theta_2$ are distributed respectively as $Beta(a,b)$ and $Beta(c,d)$. The cumulative distribution function of a Beta distribution is called the incomplete Beta distribution, and I will use the notation $I_x(a,b)$ for it. Now, by definition one has \[P(\theta_1>\theta_2)=g(a,b,c,d)=\int_{-\infty}^{+\infty} Beta_x(a,b)I_x(c,d) dx\]
-First of all,  using the identity \[I_x(c,d)=\frac{1}{cB(c,d)}x^c(1-x)^d+I_x(c+1,d)\] (\cite{abramowitz}) one finds that 
-\[g(a,b,c,d)=\frac{1}{c}h+g(a,b,c+1,d)\]\label{one} where \[h=\frac{B(a+c,b+d)}{B(a,b)B(c,d)}\].
+Let  $g(a,b,c,d) \equiv P(\theta_1>\theta_2)$ where $\theta_1$ and $\theta_2$ are distributed respectively as $\betapdf(a,b)$ and $\betapdf(c,d)$. I will use the notation $I_\theta(a,b)$ for the cumulative distribution function of the Beta distribution (also known as called the incomplete Beta distribution). Now, by definition one has \[P(\theta_1>\theta_2)=g(a,b,c,d)=\int_{-\infty}^{+\infty} \betapdf(a,b)I_\theta(c,d) d\theta\]
+First of all,  using the identity (\cite{abramowitz}) 
+\[I_\theta(c,d)=\frac{1}{cB(c,d)}\theta^c(1-\theta)^d+I_\theta(c+1,d)\] one finds that 
+\[g(a,b,c,d)=\frac{1}{c}h+g(a,b,c+1,d)\]\label{one} where \[h=\frac{B(a+c,b+d)}{B(a,b)B(c,d)}\]
 Furthermore, one can prove that $g(a,b,c,d)$ possesses a number of symmetries.
-One obvious one is $g(a,b,c,d)=1-g(c,d,a,b)$. Also true are 
-\begin{align*}\label{two}
+An obvious one is $g(a,b,c,d)=1-g(c,d,a,b)$. Also true are 
+\begin{align*}
 g(a,b,c,d)&=g(d,c,b,a) \\
 g(a,b,c,d)&=g(d,b,c,a) \\
 g(a,b,c,d)&=g(d,b,c,a) 
-\end{align*}
+\end{align*}\label{two}
 Using \ref{one},\ref{two} one can design a nice recursive scheme
 \begin{align*}
 g(a+1,b,c,d) &= g(a,b,c,d) + h(a,b,c,d)/a \\
@@ -56,37 +62,46 @@ g(a,b+1,c,d) &= g(a,b,c,d) - h(a,b,c,d)/b \\
 g(a,b,c+1,d) &= g(a,b,c,d) - h(a,b,c,d)/c \\
 g(a,b,c,d+1) &= g(a,b,c,d) + h(a,b,c,d)/d 
 \end{align*}
-where the base case is provided by $g(a,a,a,a)=\frac{1}{2}$.
+where the base case is provided by $g(a,a,a,a)=\frac{1}{2}$ (this because if $\theta_1$ and $\theta_2$ have exactly the same distribution, $P(\theta_1>\theta_2)=\frac{1}{2}$).
 \subsection{Approximate computation}
-Even if methylation data are well modelled by a Beta, the exact comparison presented above is nver (to our knowledge) used in teh literature when methylation samples are examined. As (hopefully fair) representatives of the methods frequently used we will analyze the performances of the Fisher's test and a test based on a Gaussian approximation.
+Even if methylation data are well modelled by a Beta, the exact comparison presented above is never (to our knowledge) used in the literature when methylation samples are examined. As (hopefully fair) representatives of the methods frequently used we will analyze the performances of the Fisher's test and that of a test based on a Gaussian approximation.
 
-To do a Fisher's test, one builds a contingency table with the number of unconverted and converted reads in the two samples. (note that this kind of test breaks down whne one of the rows (or columns) of the contingency table is zero). In the Gaussian approximation, one models $P(\theta)$ on each sample with a Gaussian with the same mean and variance of $Beta_{\theta}$; and then uses the two Gaussians to test for differences between $\theta_1$ and $\theta_2$. 
+To do a Fisher's test, one builds a contingency table with the number of non converted and converted reads in the two samples (note that this kind of test breaks down when one of the rows (or columns) of the contingency table is zero). In the Gaussian approximation, one models $P(\theta)$ on each sample with a Gaussian with the same mean and variance of $\betapdf$; and then uses the two Gaussians to test for differences between $\theta_1$ and $\theta_2$. 
 \section{Results and methods} 
 \subsection{comparison with approximate results}
 We organized the comparison between the exact and approximate solution in two steps. First,
-we looked at the behaviour of the two tests on a pair of real samples. The results are shown in \ref{cmpreal}.
+we looked at the behaviour of the two tests on a pair of real samples. The results are shown in figure~\ref{cmpreal}.
 \begin{figure}[h]
-\caption{comparing beta distribution with Fisher and Z score}
+\caption{Comparing beta distribution with Fisher's test and Z score test. Each plot contains an enlarged version around pvalue $\sim 0.05$.}
 \includegraphics[width=\textwidth]{fig1}
-\end{figure}\label{cmpreal}
-on the $x$ axis we plotted $P(\theta_1>\theta_2)$, on the $y$ axis we plotted the corresponding $p$-value obtained by approximating the Beta respectively with a Fisher's test (on the left) and with a Gaussian (on the right).
-We did the comparson over 100000 positions across two samples : the plot is in fact a density plot, in which different shades of blue indicate how many times the two values fall into a certain region of the plane. There's not much to comment there, except to note that, as expected, there's a broad correspondence between the different methods.
+\label{cmpreal}
+\end{figure}
+On the $x$ axis we plotted $P(\theta_1>\theta_2)$, on the $y$ axis we plotted the corresponding $p$-value obtained by approximating the Beta respectively with a Fisher's test (on the left) and with a Gaussian (on the right).
+We did the comparson over $100000$ positions across two samples : the plot is in fact a density plot, in which different shades of blue indicate how many times the two values fall into a certain region of the plane. There's not much to comment there, except to note that, as expected, there's a broad correspondence between the different methods.
 
 Next, we simulated a pair of samples whose counts are generated by the same underlying binomial process at different coverages, i.e. $\theta_1=\theta_2=0.5$. These consitute a negative control, in the sense that all the different methods should not report significant differences between the samples. Furthermore, I generated a pair of samples such that their underlying binomial probabilities are markedly different $\theta_1=0.9,\theta_2=0.5$; those are the true positives, samples for which the test should detect that $\theta_1>\theta_2$. I can then compare the ROC curves of the three methods for different values of the samples' coverages, $d_1,d_2$. 
 The results are depicted infig \ref{roc}.
 \begin{figure}[h]
-\caption{ROC curves for the three methods under comparison. Each point in the ROC curve is obtained by choosing a different threshold for calling differential methylation. For the Z score test and the Fisher's test the $p$ values are:. For the Beta distributions the threshold probabilities are: }
+\caption{ROC curves for the three methods under comparison. Each point in the ROC curve is obtained by choosing a different threshold for calling differential methylation. For the Z score test and the Fisher's test the $p$ values are:$10^{-1},5*10^{-2},2e-2,1e-2,5e-3,2e-3,1e-3$. For the Beta distributions the threshold probabilities are:$0.5,0.6,0.7,0.8,0.9,0.95,0.99$ }
 \includegraphics[width=\textwidth]{fig2}
-\end{figure}\label{roc}
+\label{roc}
+\end{figure}
 \subsection{differentially methylated regions}
-Armed with the above notions, we can compute differentially methylated regions along the genome : these are uninterrupted blocks of nuclotides where the two samples have different methylation. It is quite common to conjoin a number of adjacent nucelotides in a DMR, disregarding their exact methylation probabilities, and assigning hard boundaries to the blocks. This usually imply that a number of ad-hoc rules must be estabilished to control the minimum distance between 2 neighbouring DMRs, the minimum length of a DMR, how to exactly count the intersection of DMRs with annotated regions, etc\dots. We propose here that things need not be so awkward : an alternative approach consists simply in assigning to each nucleotide the probability computed by the algorithm presented here. Any further analysis can be conducted without imposing arbitrary threshold or boundaries : e.g. one can ask what is the average value of this probability over some specific regions (introns, enhancer, \dots) with respect to randomly chose regions, or alike. Often it is not clear a priori what is the correct scale to use when looking at methylation : if this is the case, a good approach is simply smoothing the probability per nucleotide by performing moving averages at various resolutions, i.e. clumping together the values of a number of adjoining bases in a single (average) value. Fig \ref{dmr} shows how this approach works in practice over real data.
+Using the above notions, we can compute differentially methylated regions along the genome : these are uninterrupted blocks of nucleotides where the two samples have different methylation.
+It is quite common to conjoin a number of adjacent nucelotides in a DMR, disregarding their exact methylation probabilities, and to assign hard boundaries to such blocks. This usually implies that a number of \textit{ad hoc} rules must be estabilished to control the minimum distance between 2 neighbouring DMRs, the minimum length of a DMR, how to exactly count the intersection of DMRs with annotated regions, etc\dots. We propose here that things need not be so clumsy: an alternative approach consists simply in assigning to each nucleotide the probability computed by the algorithm presented here. Any further analysis can be conducted without imposing arbitrary threshold or boundaries : \eg one can ask what is the average value of this probability over some specific regions (introns, enhancers, \dots) with respect to randomly chose regions, or alike. Often it is not clear a priori what is the correct scale to use when looking at methylation : if this is the case,one can smoothing the probability per nucleotide by computing a kernel density estimation at various bandwidths, or simply clumping together the values of a number of nearby bases in a single (average) value. Figure~\ref{dmr} shows how this approach works over real data.
 \begin{figure}[h]
 \caption{}
 \includegraphics[width=\textwidth]{fig3}
-\end{figure}\label{dmr}
+\label{pvalues}
+\end{figure}
+\begin{figure}[h]
+\caption{}
+\includegraphics[width=\textwidth]{fig4}
+\label{dmr}
+\end{figure}
 
 \subsection{implementation}
-the algorithm described above is implemented in a \verb=C= program, called \verb=methyl_diff=, available from the github page of one of the authors : \verb=http://emanueleraineri.github.io/=. The program takes as input (from \verb=stdin=) four integers, i.e. the number of non converted and converted reads for the first and the second sample respectively, and prints $P(\theta_1>\theta_2)$ on the \verb=stdout=. It takes $3.3s$ to process $10^5$ lines on off-the-shelf hardware (MacBookPro with Intel \verb=i7@2.66GHz=) 
+the algorithm described above is implemented in a \verb=C= program, called \verb=methyl_diff=, available from the github page of one of the authors : \verb=http://emanueleraineri.github.io/=. The program takes as input (from \verb=stdin=) four integers, \ie the number of non converted and converted reads for the first and the second sample respectively, and prints $P(\theta_1>\theta_2)$ on the \verb=stdout=. It takes $3.3s$ to process $10^5$ lines on off-the-shelf hardware (MacBookPro with Intel \verb=i7@2.66GHz=) 
 \bibliography{beta_paper}
 \bibliographystyle{plain}
 \end{document}
