@@ -5,6 +5,7 @@
 \newcommand{\ie}{\textit{i.e.}\ }
 \newcommand{\eg}{\textit{e.g.}\ }
 \newcommand{\betapdf}{\mbox{Beta}_\theta}
+\newcommand{\e}[1]{\times 10^{#1}}
 \title{A note on exact differences between beta distributions in genomic (methylation) studies}
 \author{Emanuele Raineri, Marc Dabad,Simon Heath}
 \email{emanuele.raineri@gmail.com}
@@ -23,16 +24,14 @@ The same formalism presented here can be applied in a similar way to variant cal
 The Beta probability distribution (over $\theta$) with parameters $a,b$ is defined by 
 \[\betapdf(a,b)=\frac{\theta^{a-1}(1-\theta)^{b-1}}{B(a,b)}\]
 where  $B$ is the Beta function 
-\[B(a,b)=\frac{(a-1)!(b-1)!}{(a+b-1)!}\].
+\[B(a,b)=\frac{(a-1)!(b-1)!}{(a+b-1)!}\]
 
 $\betapdf$ appears very naturally in many studies of genomic data: tipically such analyses also entail the comparison between different samples, which in turn means that different Betas have to be combined. Here for concreteness we will describe the case of measuring DNA methylation differences across samples through whole genome bisulfite sequencing (WGBS in what follows), but the same concepts  apply with almost no change to SNP calling. 
 
-The context can be described for our purposes as follows : imagine two populations of cells. At any given genomic coordinate, a certain fraction of the DNA strands in the first population population will be methylated: we will indicate this quantity with $\theta_1$. The corresponding number for the second population is $\theta_2$. The purpose of WGBS is to estimate the $\theta$ of a given input population by measuring the methylation state of a random (\ie selected in some unpredictable way )  subset of it. The purpose of the software we will discuss in this note is to estimate $P(\theta_1>\theta_2)$ given the result of a WGBS experiment (this description is likely to sound obvious to those who already know about WGBS and severely incomplete to those who don't : a good introduction to this kind of measurments is contained in~\cite{dna}).
-
-In what follows we will show one way of building a probabilisic model of the above experiment, and study some features of an algorithm which outputs $P$. In particular we will show the advantages of the exact computation over two sensible approximations to it, namely performing a Fisher's test on the counts and computing a Z score test. An implementation of the exact algorithm is available on the web (see below).
- 
-Consider a set of reads out of a WGBS experiment covering a certain genomic coordinate $x$ with read depth $d$. Since not all cells in the sample being sequenced will, in general,  have the same bases methylated at the same time, we will have a collection of heterogeneous reads : some will indicate methylation at position $x$ ( these are the so called {\em non converted} reads ), others ( the {\em converted} reads ) will correspond to samples that are not methylated. What one wants to estimate is the probability $\theta$ of methylation in the population (as opposed to the sampled reads) at $x$.  If $\theta$ is known a priori, the probability of obtaining $n$ non converted reads is :
+Bisulfite sequencing  can be described abstractly for our purposes as follows (the next few paragraphs are likely to sound obvious to those who already know about WGBS and severely incomplete to those who don't : a good introduction to this kind of measurments is contained in~\cite{dna}): imagine two populations of cells. At any given genomic coordinate, a certain fraction of the DNA strands in the first population population will be methylated: we will indicate this quantity with $\theta_1$. The corresponding number for the second population is $\theta_2$. The purpose of WGBS is to estimate the $\theta$ of a given input cell population by measuring the methylation state of a random (\ie selected in some unpredictable way ) set of reads sequenced from it. 
+Now, consider a set of reads out of a WGBS experiment covering a certain genomic coordinate $x$ with read depth $d$. Since not all the strands in the sample being sequenced will, in general,  have the same bases methylated at the same time, we will have a collection of heterogeneous reads : some will indicate methylation at position $x$ ( these are the so called {\em non converted} reads ), others ( the {\em converted} reads ) will correspond to samples that are not methylated. What one wants to estimate is the probability $\theta$ of methylation in the population (as opposed to the sampled reads) at $x$.  If $\theta$ is known a priori, the probability of obtaining $n$ non converted reads is :
 \[P(n|\theta)={d \choose n}\theta^n ({1-\theta})^{(d-n)}=\frac{1}{d+1}\betapdf(n+1,d-n+1)\]
+(so that's how $\betapdf$ crops up in genomic studies : it's closely related to binomials).
 If one assumes a uniform prior on $\theta$, ($P(\theta)=1, \ \forall\, \theta \in [0,1]$) the expression for $P(\theta|n)$ is very similar \footnote{The factor $\frac{1}{d+1}$ cancels out when applying Bayes' theorem}
 \[P(\theta|n)=\betapdf(n+1,d-n+1)\]
 Therefore, to assess whether a position is differentially methylated across two samples with non converted reads respectively $n_1,n_2$ and read depths $d_1,d_2$ one
@@ -40,6 +39,11 @@ has to compute
 \[P(\theta_1>\theta_2) \] where 
 \[ \theta_1 \sim \betapdf(n_1+1,d_1-n_1+1) , \theta_2 \sim \betapdf(n_2+1,d_2-n_2+1))\]\label{ineq}
 
+The purpose of the software we will discuss in this note is to estimate $P(\theta_1>\theta_2)$ given the result of a WGBS experiment.
+%(this description is likely to sound obvious to those who already know about WGBS and severely incomplete to those who don't : a good introduction to this kind of measurments is contained in~\cite{dna}).
+
+%In what follows we will show one way of building a probabilisic model of the above experiment, and study some features of an algorithm which outputs $P$. In particular we will show the advantages of the exact computation over two sensible approximations to it, namely performing a Fisher's test on the counts and computing a Z score test. An implementation of the exact algorithm is available on the web (see below).
+ 
  
 \subsection{Exact computation of beta differences}
 We will summarize here the discussion in \cite{numineq}. The reader is advised to read that paper for a more detailed derivation.
@@ -82,22 +86,23 @@ We did the comparson over $100000$ positions across two samples : the plot is in
 Next, we simulated a pair of samples whose counts are generated by the same underlying binomial process at different coverages, i.e. $\theta_1=\theta_2=0.5$. These consitute a negative control, in the sense that all the different methods should not report significant differences between the samples. Furthermore, I generated a pair of samples such that their underlying binomial probabilities are markedly different $\theta_1=0.9,\theta_2=0.5$; those are the true positives, samples for which the test should detect that $\theta_1>\theta_2$. I can then compare the ROC curves of the three methods for different values of the samples' coverages, $d_1,d_2$. 
 The results are depicted in figure~\ref{roc}.
 \begin{figure}[h]
-\caption{ROC curves for the three methods under comparison. Each point in the ROC curve is obtained by choosing a different threshold for calling differential methylation. For the Z score test and the Fisher's test the $p$ values are:$10^{-1},5*10^{-2},2e-2,1e-2,5e-3,2e-3,1e-3$. For the Beta distributions the threshold probabilities are:$0.5,0.6,0.7,0.8,0.9,0.95,0.99$ }
+\caption{ROC curves for the three methods under comparison. Each point in the ROC curve is obtained by choosing a different threshold for calling differential methylation. For the Z score test and the Fisher's test the $p$ values are:$10^{-1},5\e{-2},2\e{-2},1\e{-2},5\e{-3},2\e{-3},1\e{-3}$. For the Beta distributions the threshold probabilities are:$0.5,0.6,0.7,0.8,0.9,0.95,0.99$ }
 \includegraphics[width=\textwidth]{fig2}
 \label{roc}
 \end{figure}
 \subsection{differentially methylated regions}
 Using the above notions, we can compute differentially methylated regions along the genome : these are uninterrupted blocks of nucleotides where the two samples have different methylation.
-It is quite common to conjoin a number of adjacent nucelotides in a DMR, disregarding their exact methylation probabilities, and to assign hard boundaries to such blocks. This usually implies that a number of \textit{ad hoc} rules must be estabilished to control the minimum distance between 2 neighbouring DMRs, the minimum length of a DMR, how to exactly count the intersection of DMRs with annotated regions, etc\dots. We propose here that things need not be so clumsy: an alternative approach consists simply in assigning to each nucleotide the probability computed by the algorithm presented here. Any further analysis can be conducted without imposing arbitrary threshold or boundaries : \eg one can ask what is the average value of this probability over some specific regions (introns, enhancers, \dots) with respect to randomly chose regions, or alike. Often it is not clear a priori what is the correct scale to use when looking at methylation : if this is the case,one can smoothing the probability per nucleotide by computing a kernel density estimation at various bandwidths, or simply clumping together the values of a number of nearby bases in a single (average) value. Figure~\ref{dmr} shows how this approach works over real data.
+It is quite common to conjoin a number of adjacent nucelotides in a DMR, disregarding their exact methylation probabilities, and to assign hard boundaries to such blocks. This usually implies that a number of \textit{ad hoc} rules must be estabilished to control the minimum distance between 2 neighbouring DMRs, the minimum length of a DMR, how to exactly count the intersection of DMRs with annotated regions, etc\dots. We propose here that things need not be so clumsy: an alternative approach consists simply in assigning to each nucleotide the probability computed by the algorithm presented here. Any further analysis can be conducted without imposing arbitrary threshold or boundaries : \eg one can ask what is the average value of this probability over some specific regions (introns, enhancers, \dots) with respect to randomly chose regions, or alike. Often it is not clear a priori what is the correct scale to use when looking at methylation : if this is the case,one can smoothing the probability per nucleotide by computing a kernel density estimation at various bandwidths, or simply clumping together the values of a number of nearby bases in a single (average) value. 
 \begin{figure}[h]
-\caption{}
+\caption{left panel: effect of coverage on probability. right panel : effect of 
+different distribution of reads (at fixed coverage) over standard deviation}
 \includegraphics[width=\textwidth]{fig3}
 \label{pvalues}
 \end{figure}
 \begin{figure}[h]
 \caption{}
 \includegraphics[width=\textwidth]{fig4}
-\label{dmr}
+\label{cov}
 \end{figure}
 
 \subsection{implementation}
