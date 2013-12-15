@@ -16,7 +16,7 @@ def get_inset(fig,coords,y):
     inset.set_yscale('log')
     inset.set_xscale('log')
     inset.set_ylim((0,0.05))
-    inset.set_title(r'$1-Beta$')
+    inset.set_title(r'$1-Beta$',fontsize=10)
     inset.scatter( 1-beta , y , marker='.'  )
     inset.grid()
     majorLocator = plt.FixedLocator([1.5e-2,1e-3,1e-4,1e-5,1e-6])

@@ -11,6 +11,8 @@ beta_paper.dvi : beta_paper.tex beta_paper.bib fig1.eps fig2.eps fig3.eps fig4.e
 	latex beta_paper.tex
 	latex beta_paper.tex
 
+beta_paper.pdf : beta_paper.ps
+	ps2pdf $< $@
 
 
 roc_5_5.txt :

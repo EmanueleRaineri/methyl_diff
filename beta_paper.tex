@@ -7,8 +7,8 @@
 \newcommand{\betapdf}{\mbox{Beta}_\theta}
 \newcommand{\e}[1]{\times 10^{#1}}
 \title{A note on exact differences between beta distributions in genomic (methylation) studies}
-\author{Emanuele Raineri, Marc Dabad,Simon Heath}
-\email{emanuele.raineri@gmail.com}
+\author{ Emanuele Raineri, Marc Dabad, Simon Heath }
+\email{ emanuele.raineri@gmail.com }
 \date{\today}
 \begin{document}
 \begin{abstract}
@@ -26,12 +26,16 @@ The Beta probability distribution (over $\theta$) with parameters $a,b$ is defin
 where  $B$ is the Beta function 
 \[B(a,b)=\frac{(a-1)!(b-1)!}{(a+b-1)!}\]
 
-$\betapdf$ appears very naturally in many studies of genomic data: tipically such analyses also entail the comparison between different samples, which in turn means that different Betas have to be combined. Here for concreteness we will describe the case of measuring DNA methylation differences across samples through whole genome bisulfite sequencing (WGBS in what follows), but the same concepts  apply with almost no change to SNP calling. 
+$\betapdf$ appears very naturally in many studies of genomic data: tipically such analyses also entail the comparison between different samples, which in turn means that different Betas have to be combined. Here for concreteness we will describe the case of measuring DNA methylation differences across samples through whole genome bisulfite sequencing (WGBS in what follows), but the same concepts  apply with almost no change to genotyping. 
 
-Bisulfite sequencing  can be described abstractly for our purposes as follows (the next few paragraphs are likely to sound obvious to those who already know about WGBS and severely incomplete to those who don't : a good introduction to this kind of measurments is contained in~\cite{dna}): imagine two populations of cells. At any given genomic coordinate, a certain fraction of the DNA strands in the first population population will be methylated: we will indicate this quantity with $\theta_1$. The corresponding number for the second population is $\theta_2$. The purpose of WGBS is to estimate the $\theta$ of a given input cell population by measuring the methylation state of a random (\ie selected in some unpredictable way ) set of reads sequenced from it. 
-Now, consider a set of reads out of a WGBS experiment covering a certain genomic coordinate $x$ with read depth $d$. Since not all the strands in the sample being sequenced will, in general,  have the same bases methylated at the same time, we will have a collection of heterogeneous reads : some will indicate methylation at position $x$ ( these are the so called {\em non converted} reads ), others ( the {\em converted} reads ) will correspond to samples that are not methylated. What one wants to estimate is the probability $\theta$ of methylation in the population (as opposed to the sampled reads) at $x$.  If $\theta$ is known a priori, the probability of obtaining $n$ non converted reads is :
+The purpose of bisulfite sequencing  can be described abstractly for our purposes as determining which fraction of DNA strands in a population of cells (corresponding to a sample) is methylated at any given genomic position. In what follows we will call this fraction $\theta$; if we want to distinguish between different samples we will write $\theta_1$ and $\theta_2$. WGBS experiments estimates this numbers by measuring the methylation state of of a random (\ie selected in some unpredictable way ) set of reads sequenced from the samples. Since we can only analyze a finite number of reads per sample we will know the value of $\theta$ only up to some variability. 
+\footnote{the above definition is likely to sound obvious to those who already know about WGBS and too terse to those who don't : a good introduction to this kind of measurements is contained in chapter $11$ of ~\cite{dna}}.
+
+%given two populations of cells and some  genomic coordinate, a certain fraction of the DNA strands in the first population population will be methylated: we will indicate this quantity with $\theta_1$. The corresponding number for the second population is $\theta_2$. The purpose of WGBS is to estimate the $\theta$ of a given input cell population by measuring the methylation state  
+To appreciate how this variability can be quantified, consider a set of reads out of a WGBS experiment covering a certain genomic coordinate $x$ with read depth $d$. Since not all the strands in the sample being sequenced will, in general,  have the same bases methylated at the same time, we will have a collection of heterogeneous reads : some will indicate methylation at position $x$ ( these are the so called {\em non converted} reads ), others ( the {\em converted} reads ) will correspond to samples that are not methylated. 
+%What one wants to estimate is the probability $\theta$ of methylation in the population (as opposed to the sampled reads) at $x$. 
+Now, if $\theta$ were known a priori, the probability of obtaining $n$ non converted reads would be given a binomial distribution which is, as it turns out, closely related to $\betapdf$:
 \[P(n|\theta)={d \choose n}\theta^n ({1-\theta})^{(d-n)}=\frac{1}{d+1}\betapdf(n+1,d-n+1)\]
-(so that's how $\betapdf$ crops up in genomic studies : it's closely related to binomials).
 If one assumes a uniform prior on $\theta$, ($P(\theta)=1, \ \forall\, \theta \in [0,1]$) the expression for $P(\theta|n)$ is very similar \footnote{The factor $\frac{1}{d+1}$ cancels out when applying Bayes' theorem}
 \[P(\theta|n)=\betapdf(n+1,d-n+1)\]
 Therefore, to assess whether a position is differentially methylated across two samples with non converted reads respectively $n_1,n_2$ and read depths $d_1,d_2$ one
@@ -44,11 +48,11 @@ The purpose of the software we will discuss in this note is to estimate $P(\thet
 
 %In what follows we will show one way of building a probabilisic model of the above experiment, and study some features of an algorithm which outputs $P$. In particular we will show the advantages of the exact computation over two sensible approximations to it, namely performing a Fisher's test on the counts and computing a Z score test. An implementation of the exact algorithm is available on the web (see below).
  
- 
 \subsection{Exact computation of beta differences}
-We will summarize here the discussion in \cite{numineq}. The reader is advised to read that paper for a more detailed derivation.
+A method for solving~\ref{ineq} is presented in full detail in \cite{numineq}. We will summarize its derivation here for the sake of completeness, and advise interested readers to study that paper for a more detailed discussion. 
+%We will summarize here the discussion in \cite{numineq}. The reader is advised to read that paper for a more detailed derivation.
 We need some preliminary definitions to start with:
-Let  $g(a,b,c,d) \equiv P(\theta_1>\theta_2)$ where $\theta_1$ and $\theta_2$ are distributed respectively as $\betapdf(a,b)$ and $\betapdf(c,d)$. I will use the notation $I_\theta(a,b)$ for the cumulative distribution function of the Beta distribution (also known as called the incomplete Beta distribution). Now, by definition one has \[P(\theta_1>\theta_2)=g(a,b,c,d)=\int_{-\infty}^{+\infty} \betapdf(a,b)I_\theta(c,d) d\theta\]
+Let  $g(a,b,c,d) \equiv P(\theta_1>\theta_2)$ where $\theta_1$ and $\theta_2$ are distributed respectively as $\betapdf(a,b)$ and $\betapdf(c,d)$. Besides, we will use the notation $I_\theta(a,b)$ for the cumulative distribution function of the Beta distribution (also known as called the incomplete Beta distribution). Now, by definition one has \[P(\theta_1>\theta_2)=g(a,b,c,d)=\int_{-\infty}^{+\infty} \betapdf(a,b)I_\theta(c,d) d\theta\]
 First of all,  using the identity (\cite{abramowitz}) 
 \[I_\theta(c,d)=\frac{1}{cB(c,d)}\theta^c(1-\theta)^d+I_\theta(c+1,d)\] one finds that 
 \[g(a,b,c,d)=\frac{1}{c}h+g(a,b,c+1,d)\]\label{one} where \[h=\frac{B(a+c,b+d)}{B(a,b)B(c,d)}\]
@@ -59,7 +63,7 @@ g(a,b,c,d)&=g(d,c,b,a) \\
 g(a,b,c,d)&=g(d,b,c,a) \\
 g(a,b,c,d)&=g(d,b,c,a) 
 \end{align*}\label{two}
-Using \ref{one},\ref{two} one can design a nice recursive scheme
+Using \ref{one} and \ref{two} one can design a nice recursive scheme
 \begin{align*}
 g(a+1,b,c,d) &= g(a,b,c,d) + h(a,b,c,d)/a \\
 g(a,b+1,c,d) &= g(a,b,c,d) - h(a,b,c,d)/b \\
@@ -68,15 +72,15 @@ g(a,b,c,d+1) &= g(a,b,c,d) + h(a,b,c,d)/d
 \end{align*}
 where the base case is provided by $g(a,a,a,a)=\frac{1}{2}$ (this because if $\theta_1$ and $\theta_2$ have exactly the same distribution, $P(\theta_1>\theta_2)=\frac{1}{2}$).
 \subsection{Approximate computation}
-Even if methylation data are well modelled by a Beta, the exact comparison presented above is never (to our knowledge) used in the literature when methylation samples are examined. As (hopefully fair) representatives of the methods frequently used we will analyze the performances of the Fisher's test and that of a test based on a Gaussian approximation.
+Even if methylation data are well modelled by a $\betapdf$, the exact comparison presented above is never (to our knowledge) used in the literature. As (hopefully fair) representatives of the methods frequently used instead, we will analyze the performances of the Fisher's test and that of a test based on a Gaussian approximation.
 
-To do a Fisher's test, one builds a contingency table with the number of non converted and converted reads in the two samples (note that this kind of test breaks down when one of the rows (or columns) of the contingency table is zero). In the Gaussian approximation, one models $P(\theta)$ on each sample with a Gaussian with the same mean and variance of $\betapdf$; and then uses the two Gaussians to test for differences between $\theta_1$ and $\theta_2$. 
+To do a Fisher's test, one builds a contingency table with the number of non converted and converted reads in the two samples (note that this kind of test breaks down when one of the rows (or columns) of the contingency table is zero). In the Gaussian approximation, one models $P(\theta)$ for each sample with a Gaussian with the same mean and variance of $\betapdf$; and then uses the two Gaussians to test for differences between $\theta_1$ and $\theta_2$. 
 \section{Results and methods} 
 \subsection{comparison with approximate results}
 We organized the comparison between the exact and approximate solution in two steps. First,
 we looked at the behaviour of the two tests on a pair of real samples. The results are shown in figure~\ref{cmpreal}.
 \begin{figure}[h]
-\caption{Comparing beta distribution with Fisher's test and Z score test. Each plot contains an enlarged version around pvalue $\sim 0.05$.}
+\caption{Comparing beta distribution with Fisher's test and Z score test. Each plot contains an enlarged version around pvalue $\sim 0.05$. Notice that the on this zoomed in plots the $x$ axis is $1-\betapdf$, for exact powers of $10$ take less space in the labels then string of $9$s.}
 \includegraphics[width=\textwidth]{fig1}
 \label{cmpreal}
 \end{figure}
