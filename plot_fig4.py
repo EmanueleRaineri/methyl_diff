@@ -75,4 +75,5 @@ ax2.plot(x4,y4,color="green",label="%d,%d"%(a4,b4),lw=2)
 handles, labels = ax2.get_legend_handles_labels()
 ax2.legend(handles, labels)
 #
+fig.savefig("fig4.eps",  facecolor='w', edgecolor='w', frameon=None)
 plt.show()
