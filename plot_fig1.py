@@ -29,12 +29,11 @@ def get_inset(fig,coords,y):
         tick.label.set_fontsize(9) 
         tick.label.set_rotation('vertical')
     return inset
-    
 
 #######################################################
 
 #mpl.rc('ps',usedistiller='xpdf')
-data = np.genfromtxt( "G199.G202.beta.fisher.zscore" , dtype=None )
+data = np.genfromtxt( "data/G199.G202.beta.fisher.zscore" , dtype=None )
 
 print data[0]
 

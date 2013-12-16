@@ -22,9 +22,9 @@ def make_triplet(ax,data):
 ###################
 
 
-data1 = np.genfromtxt("roc_5_5.txt")
-data2 = np.genfromtxt("roc_10_10.txt")
-data3 = np.genfromtxt("roc_40_40.txt")
+data1 = np.genfromtxt("data/roc_5_5.txt")
+data2 = np.genfromtxt("data/roc_10_10.txt")
+data3 = np.genfromtxt("data/roc_40_40.txt")
 
 fig=plt.figure(frameon=False, figsize=( 10 , 6 ) )
 fig.patch.set_visible(False)
