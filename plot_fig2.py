@@ -8,7 +8,7 @@ def lines_of_data(ax,x,y,label,colour):
     label=label,
     linestyle="-",
     c=colour, 
-    linewidth=1, 
+    linewidth=2, 
     alpha=0.5)
     ax.scatter(x,y,marker='o',c=colour,lw=0)
     return lines

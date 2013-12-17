@@ -33,13 +33,13 @@ fig1.eps : plot_fig1.py data/G199.G202.beta.fisher.zscore
 	python plot_fig1.py
 	#convert fig1.ps fig1.eps
 
-fig2.eps : data/roc_5_5.txt data/roc_10_10.txt data/roc_40_40.txt 
+fig2.eps : plot_fig2.py data/roc_5_5.txt data/roc_10_10.txt data/roc_40_40.txt 
 	python plot_fig2.py
 
 fig3.eps: plot_fig3.py data/fisher_of_p_10_10.txt data/fisher_of_n_10_10.txt 
 	python plot_fig3.py
 
-fig4.eps:
+fig4.eps: plot_fig4.py
 	python plot_fig4.py
 
 clean:
