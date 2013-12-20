@@ -14,12 +14,14 @@ def format_log_ax(ax):
     return ax
 
 ###################
-tp_fisher=pd.read_csv("data/fisher_of_p_10_10.txt",header=None)
-tn_fisher=pd.read_csv("data/fisher_of_n_10_10.txt",header=None)
-tp_z=pd.read_csv("data/zscore_of_p_10_10.txt",header=None)
-tn_z=pd.read_csv("data/zscore_of_n_10_10.txt",header=None)
-tp_beta=pd.read_csv("data/beta_of_p_10_10.txt",header=None)
-tn_beta=pd.read_csv("data/beta_of_n_10_10.txt",header=None)
+tp_fisher=pd.read_csv("data/fisher_of_p_10_10.txt",header=None,sep=" ")[:-1]
+tn_fisher=pd.read_csv("data/fisher_of_n_10_10.txt",header=None,sep=" ")[:-1]
+tp_z=pd.read_csv("data/zscore_of_p_10_10.txt",header=None,sep=" ")[:-1]
+tn_z=pd.read_csv("data/zscore_of_n_10_10.txt",header=None,sep=" ")[:-1]
+tp_beta=pd.read_csv("data/beta_of_p_10_10.txt",header=None,sep=" ")[:-1]
+tn_beta=pd.read_csv("data/beta_of_n_10_10.txt",header=None,sep=" ")[:-1]
+
+
 
 pvals=np.logspace(-6,0,7)
 probs=np.arange( -0.1 , 1.0 , .1 ) + 0.1

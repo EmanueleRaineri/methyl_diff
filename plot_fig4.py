@@ -89,7 +89,5 @@ sys.stderr.write("(rigth panel)mean1=%g,mode1=%g,sd1=%g,mean2=%g,mode2=%g,sd2=%g
 ax2.annotate(r'$\sigma=%.2g$'%(std2),xy=(0.1,5),color='green',fontsize=14)
 ax2.annotate(r'$\sigma=%.2g$'%(std1),xy=(0.5,3),color='blue',fontsize=14)
 #
-
-
 fig.savefig("fig4.eps",  facecolor='w', edgecolor='w', frameon=None)
 plt.show()

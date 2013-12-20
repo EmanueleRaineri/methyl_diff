@@ -1,5 +1,8 @@
-methyl_diff: methyl_diff.c
+methyl_diff_static: methyl_diff.c
 	gcc -Wall -static -O3 -o methyl_diff $< -lm
+
+methyl_diff: methyl_diff.c
+	gcc -Wall  -O3 -o methyl_diff $< -lm
 
 beta_diff : beta_diff.ml
 	ocamlopt.opt -ccopt -static str.cmxa beta_diff.ml -o beta_diff
@@ -19,19 +22,17 @@ beta_paper.pdf : beta_paper.ps
 data/G199.G202.beta.fisher.zscore:
 	awk '{print $$2}' G199.G202.zscore | paste G199.G202 G199.G202.beta_diff G199.G202.fisher - > $@ 
 
-
-data/roc_5_5.txt :
+data/roc_5_5.txt : cmp_power.sh methyl_diff
 	./cmp_power.sh 5 5
 
-data/roc_10_10.txt :
+data/roc_10_10.txt : cmp_power.sh methyl_diff
 	./cmp_power.sh 10 10
 
-data/roc_40_40.txt :
+data/roc_40_40.txt : cmp_power.sh methyl_diff
 	./cmp_power.sh 40 40 
 
 fig1.eps : plot_fig1.py data/G199.G202.beta.fisher.zscore
 	python plot_fig1.py
-	#convert fig1.ps fig1.eps
 
 fig2.eps : plot_fig2.py data/roc_5_5.txt data/roc_10_10.txt data/roc_40_40.txt 
 	python plot_fig2.py
