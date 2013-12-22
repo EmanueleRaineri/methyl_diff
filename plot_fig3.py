@@ -14,32 +14,46 @@ def format_log_ax(ax):
     return ax
 
 ###################
-tp_fisher=pd.read_csv("data/fisher_of_p_10_10.txt",header=None,sep=" ")[:-1]
-tn_fisher=pd.read_csv("data/fisher_of_n_10_10.txt",header=None,sep=" ")[:-1]
-tp_z=pd.read_csv("data/zscore_of_p_10_10.txt",header=None,sep=" ")[:-1]
-tn_z=pd.read_csv("data/zscore_of_n_10_10.txt",header=None,sep=" ")[:-1]
-tp_beta=pd.read_csv("data/beta_of_p_10_10.txt",header=None,sep=" ")[:-1]
-tn_beta=pd.read_csv("data/beta_of_n_10_10.txt",header=None,sep=" ")[:-1]
+tp_fisher=pd.read_csv("data/fisher_of_p_10_10.txt",header=None,sep=" ")[4]
+tn_fisher=pd.read_csv("data/fisher_of_n_10_10.txt",header=None,sep=" ")[4]
+tp_z=pd.read_csv("data/zscore_of_p_10_10.txt",header=None,sep=" ")[1]
+tn_z=pd.read_csv("data/zscore_of_n_10_10.txt",header=None,sep=" ")[1]
+tp_beta=pd.read_csv("data/beta_of_p_10_10.txt",header=None,sep=" ")
+tn_beta=pd.read_csv("data/beta_of_n_10_10.txt",header=None,sep=" ")
+
+print tp_fisher,tp_z, tp_beta
+pvals = np.logspace(-6,0,7)
+probs = np.arange( -0.1 , 1.0 , .1 ) + 0.1
+
+print "pvals,probs",pvals,probs
+
+tp_fisher_counts , bins = np.histogram(tp_fisher,bins=pvals)
+tn_fisher_counts , bins = np.histogram(tn_fisher,bins=pvals)
+
+tp_z_counts , bins = np.histogram(tp_z,bins=pvals)
+tn_z_counts , bins = np.histogram(tn_z,bins=pvals)
+
+tp_beta_counts , beta_bins = np.histogram(tp_beta,bins=probs)
+tn_beta_counts , beta_bins = np.histogram(tn_beta,bins=probs)
+
+print "sums"
+print [ np.sum(v) for v in tp_fisher_counts,
+    tn_fisher_counts,
+    tp_z_counts,
+    tn_z_counts,
+    tp_beta_counts,
+    tn_beta_counts]
 
 
-
-pvals=np.logspace(-6,0,7)
-probs=np.arange( -0.1 , 1.0 , .1 ) + 0.1
-tp_fisher_counts,bins=np.histogram(tp_fisher,bins=pvals)
-tn_fisher_counts,bins=np.histogram(tn_fisher,bins=pvals)
-tp_z_counts,bins=np.histogram(tp_z,bins=pvals)
-tn_z_counts,bins=np.histogram(tn_z,bins=pvals)
-tp_beta_counts,beta_bins=np.histogram(tp_beta,bins=probs)
-tn_beta_counts,beta_bins=np.histogram(tn_beta,bins=probs)
 ##############################################
+
 fig = plt.figure(frameon=False, figsize=( 10 , 6 ) )
 fig.patch.set_visible(False)
 left=pvals[:-1]
 w=pvals[1:]-pvals[:-1]
-#center = ( pvals[:-1] + pvals[1:] ) / 2
-#width = (pvals[1:]- center) 
 print "tp_fisher",tp_fisher_counts,bins 
 print "tp_beta",tp_beta_counts,beta_bins
+print "left,w",left,w
 # tp fisher
 ax=fig.add_subplot(231)
 ax=format_log_ax(ax)
@@ -66,7 +80,7 @@ ax.yaxis.set_major_formatter(plt.NullFormatter())
 ax.bar(left,tn_z_counts,width=w,color='green')
 
 left = probs[:-1]
-w= 0.1
+w = 0.1
 #tp beta
 ax=fig.add_subplot(233)
 ax.set_xlim((0,1))

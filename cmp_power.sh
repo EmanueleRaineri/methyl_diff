@@ -34,9 +34,9 @@ echo "fisher on n..."
 python fisher.py < $NEG > $FISHERN
 #######
 echo "beta_diff on p"
-awk '{print $1+1,$2+1,$3+1,$4+1}' $POS | ./methyl_diff > $BETAP 
+awk '{print $1,$2,$3,$4}' $POS | ./methyl_diff > $BETAP 
 echo "beta_diff on n"
-awk '{print $1+1,$2+1,$3+1,$4+1}' $NEG | ./methyl_diff > $BETAN 
+awk '{print $1,$2,$3,$4}' $NEG | ./methyl_diff > $BETAN 
 #######
 echo "Z score on p"
 python zscore.py < $POS  > $ZSCOREP 
