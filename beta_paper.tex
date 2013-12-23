@@ -7,8 +7,17 @@
 \newcommand{\betapdf}{\mbox{Beta}_\theta}
 \newcommand{\e}[1]{\times 10^{#1}}
 \title{A note on exact differences between beta distributions in genomic (methylation) studies}
-\author{ Emanuele Raineri, Marc Dabad, Simon Heath }
+\author{Emanuele Raineri}
+%%
+\address{Centro Nacional de An\'alisis Gen\'omico}
 \email{ emanuele.raineri@gmail.com }
+%%
+\author{Marc Dabad}
+\address{Centro Nacional de An\'alisis Gen\'omico}
+%%
+\author{Simon Heath}
+\address{Centro Nacional de An\'alisis Gen\'omico}
+%%
 \date{\today}
 \begin{document}
 \begin{abstract}
@@ -31,9 +40,7 @@ $\betapdf$ appears very naturally in many studies of genomic data: tipically suc
 The purpose of bisulfite sequencing  can be described abstractly for our purposes as determining which fraction of DNA strands in a population of cells (corresponding to a sample) is methylated at any given genomic position. In what follows we will call this fraction $\theta$; if we want to distinguish between different samples we will write $\theta_1$ and $\theta_2$. WGBS experiments estimate this numbers by measuring the methylation state of of a random (\ie selected in some unpredictable way ) set of reads sequenced from the samples. Since we can only analyze a finite number of reads per sample we will know the value of $\theta$ only up to some variability. 
 \footnote{the above definition is likely to sound obvious to those who already know about WGBS and too terse to those who don't: a good introduction to this kind of measurements is contained in chapter $11$ of ~\cite{dna}}.
 
-%given two populations of cells and some  genomic coordinate, a certain fraction of the DNA strands in the first population population will be methylated: we will indicate this quantity with $\theta_1$. The corresponding number for the second population is $\theta_2$. The purpose of WGBS is to estimate the $\theta$ of a given input cell population by measuring the methylation state  
 To appreciate how this variability can be quantified, consider a set of reads out of a WGBS experiment covering a certain genomic coordinate $x$ with read depth $d$. Since not all the strands in the sample being sequenced will, in general,  have the same bases methylated at the same time, we will have a collection of heterogeneous reads : some will indicate methylation at position $x$ (these are the so called {\em non converted} reads), others (the {\em converted} reads) will correspond to samples that are not methylated. 
-%What one wants to estimate is the probability $\theta$ of methylation in the population (as opposed to the sampled reads) at $x$. 
 Now, if $\theta$ were known a priori, the probability of obtaining $n$ non converted reads would be given a binomial distribution which is, as it turns out, closely related to $\betapdf$:
 \[P(n|\theta)={d \choose n}\theta^n ({1-\theta})^{(d-n)}=\frac{1}{d+1}\betapdf(n+1,d-n+1)\]
 If one assumes a uniform prior on $\theta$, ($P(\theta)=1, \ \forall\, \theta \in [0,1]$) the expression for $P(\theta|n)$ is very similar \footnote{The factor $\frac{1}{d+1}$ cancels out when applying Bayes' theorem}
@@ -47,10 +54,7 @@ has to compute
 \end{equation}
 
 The purpose of the software we will discuss in this note is to estimate $P(\theta_1>\theta_2)$ given the result of a WGBS experiment.
-%(this description is likely to sound obvious to those who already know about WGBS and severely incomplete to those who don't : a good introduction to this kind of measurments is contained in~\cite{dna}).
 
-%In what follows we will show one way of building a probabilisic model of the above experiment, and study some features of an algorithm which outputs $P$. In particular we will show the advantages of the exact computation over two sensible approximations to it, namely performing a Fisher's test on the counts and computing a Z score test. An implementation of the exact algorithm is available on the web (see below).
- 
 \subsection{Exact computation of beta differences}
 A method for solving~\ref{ineq} is presented in full detail in~\cite{numineq},\cite{exactbetaineq}. We will summarize its derivation here for the sake of completeness, and advise interested readers to study those papers for a more detailed discussion. 
 We need some preliminary definitions to start with:
