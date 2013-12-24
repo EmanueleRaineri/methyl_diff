@@ -1,3 +1,7 @@
+cover_letter.pdf: cover_letter.tex
+	latex cover_letter.tex
+	dvipdf cover_letter.dvi $@
+
 beta_paper_plos.tex: ../beta_paper.tex
 	python fill_plos_template.py > $@
 
