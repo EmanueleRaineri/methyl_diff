@@ -8,8 +8,11 @@ beta_paper_plos.tex: ../beta_paper.tex
 beta_paper_plos.pdf: beta_paper_plos.ps
 	ps2pdf $^
 
-beta_paper_plos.ps: beta_paper_plos.dvi
-	dvips -o $@ $^
+fig1.eps fig2.eps fig3.eps fig4.eps:
+	cp ../fig1.eps ../fig2.eps ../fig3.eps ../fig4.eps .
+
+beta_paper_plos.ps: beta_paper_plos.dvi fig1.eps fig2.eps fig3.eps fig4.eps
+	dvips -o $@ $<
 
 beta_paper_plos.dvi : beta_paper_plos.tex ../beta_paper.bib
 	latex beta_paper_plos.tex

@@ -42,16 +42,15 @@ def author_specs(authors,corr,email):
     else:
         tmp+="\n"
     tmp+="\\\\\n"
-    for i in range(la):
-        a=authors[i]
-        tmp+="\\bf{%d} %s %s, %s, %s, %s, %s\n"%\
-        (i+1,a[0],a[1],a[2],a[3],a[4],a[5])
-        tmp+="\\\\\n"
+    a=authors[0]
+    tmp+="\\bf{%s} %s, %s, %s, %s, %s\n"%\
+        ("1,2,3",a[1],a[2],a[3],a[4],a[5])
+    tmp+="\\\\\n"
     tmp+="$\\ast$ E-mail:%s\n"%email     
     return tmp 
 
 
-def document(title,abstract,doc):
+def document(title,abstract,doc,figures,authors,corr,email):
     tmp=""
     tmp+="""\\begin{document}
 
@@ -61,11 +60,18 @@ def document(title,abstract,doc):
 \\textbf{%s}
 }\n
 """%(title)
-    
+   
+    tmp+=author_specs(authors,corr,email)
+
     tmp+="\\end{flushleft}\n"
     tmp+="\\section*{Abstract}\n"
     tmp+=abstract
     tmp+=doc
+    tmp+="\\section*{Acknowledgments}\n"
+    tmp+="\\section*{References}\n"
+    tmp+="\\bibliography{../beta_paper.bib}\n"
+    tmp+="\\section*{Figure Legends}"
+    tmp+=figures
     tmp+="\\end{document}"
     return tmp
 
@@ -134,5 +140,6 @@ abstract=extract_abstract(orig_texfile)
 preamble = load_preamble(orig_texfile,plos_texfile)
 content,figures=slurp_content(orig_texfile)
 print preamble
-print document(title,abstract,content)
+corr=0;email="emanuele.raineri@gmail.com"
+print document( title, abstract, content, figures, authors, corr,email )
 #print figures
