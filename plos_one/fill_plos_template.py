@@ -6,10 +6,14 @@ def load_preamble( orig_texfile , plos_texfile ):
     while True:
         l=f.readline()
         if (l==''): break
+        if ("documentclass[10pt]{article}" in l):
+            preamble.append("\\documentclass[10pt,draft]{article}")
+            continue
         if (r"\begin{document}" in l ):
             break
         else:
             preamble.append(l)
+    
     f.close()
     f=open(orig_texfile,"r")
     while True:
