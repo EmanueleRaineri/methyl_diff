@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define CSIZE 40
+#define UB CSIZE*CSIZE*CSIZE*CSIZE
+
+
 double lngamma(const double xx) {
     int j;
     double x,tmp,y,ser,tmp2; 
@@ -46,6 +50,43 @@ double h(int a1, int b1, int a2, int b2){
 }
 
 double g (int a1, int b1, int a2, int b2){
+   static double cache[CSIZE*CSIZE*CSIZE*CSIZE];
+   int idx = a1+CSIZE*CSIZE*CSIZE*b1+CSIZE*CSIZE*a2+CSIZE*b2;
+    double res;
+    
+    if (idx<UB) {
+        if ( cache[idx] > 0 ) return cache[idx];
+    }
+
+   if (a1 == a2 && b1==b2 ) return 0.5;
+   if (a1>a2){ 
+      res = g( (a1-1), b1, a2, b2 ) + 
+            h ((a1 - 1), b1, a2, b2) / ( a1 - 1 );  
+        if (idx<UB) cache[idx]=res;
+        return res;
+    }
+    if (a2>a1){
+    res =  g (a1, b1, (a2-1), b2 ) - 
+            h (a1, b1, (a2-1), b2 ) /  ( a2 - 1 ) ;
+        if (idx<UB) cache[idx]=res;
+        return res;
+    }
+    if  ( b1 > b2 ) {
+        res =  g (a1 ,(b1-1) ,a2, b2 ) - 
+            h (a1 ,(b1-1) ,a2, b2) /  ( b1 - 1 ) ;
+        if (idx<UB) cache[idx]=res;
+        return res;
+    }
+    if  ( b2 > b1 ) {
+       res =  g( a1, b1, a2, ( b2 - 1 ) ) + 
+            h (a1, b1, a2, ( b2 - 1 ) ) /   ( b2 - 1 );
+        if (idx<UB) cache[idx]=res;
+        return res;
+    }
+    return -1;
+}
+
+/*double g (int a1, int b1, int a2, int b2){
    if (a1 == b1 && b1==a2 && a2==b2) return 0.5;
    if  (a1 > 1)  {
       return  g( (a1-1), b1, a2, b2 ) + 
@@ -65,7 +106,7 @@ double g (int a1, int b1, int a2, int b2){
     }
     return -1.0 ;
 }
-
+*/
 
 
 int main(){
